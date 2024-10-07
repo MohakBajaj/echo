@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String          @id
+  createdAt             DateTime        @default(now()) @map(name: "created_at")
+  updatedAt             DateTime        @default(now()) @map(name: "updated_at")
+  userHash              String          @unique
+  username              String          @unique
+  bio                   String?
+  privacy               Privacy         @default(PUBLIC)
+  followers             User[]          @relation(name: "followers")
+  following             User[]          @relation(name: "followers")
+  posts                 Post[]
+  likedPosts            Like[]
+  isAdmin               Boolean?        @default(false) @map(name: "is_admin")
+  reposts               Repost[]
+  reports               Report[]
+  senderNotifications   Notification[]  @relation("sender")
+  receiverNotifications Notification[]  @relation("receiver")
+  Account               Account[]
+  Session               Session[]
+  Authenticator         Authenticator[]
+
+  @@unique([createdAt, id])
+}
+
+enum Privacy {
+  PUBLIC
+  PRIVATE
+}
+
+model Post {
+  id           String         @id @default(cuid())
+  createdAt    DateTime       @default(now())
+  author       User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId     String
+  text         String
+  images       String[]
+  likes        Like[]
+  parentPostId String?
+  parentPost   Post?          @relation("rootPost", fields: [parentPostId], references: [id], onDelete: Cascade)
+  replies      Post[]         @relation("rootPost")
+  notification Notification[]
+  reposts      Repost[]
+  quoteId      String?
+  privacy      PostPrivacy    @default(ANYONE)
+  reports      Report[]
+
+  @@unique([createdAt, id])
+  @@index([authorId])
+}
+
+model Like {
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@id([postId, userId])
+  @@index([userId])
+  @@index([postId])
+}
+
+model Repost {
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@id([postId, userId])
+  @@index([userId])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  createdAt DateTime         @default(now())
+  read      Boolean          @default(false)
+  type      NotificationType
+  message   String
+  isPublic  Boolean          @default(false)
+
+  senderUserId   String
+  receiverUserId String?
+  senderUser     User    @relation("sender", fields: [senderUserId], references: [id], onDelete: Cascade)
+  receiverUser   User?   @relation("receiver", fields: [receiverUserId], references: [id], onDelete: Cascade)
+
+  postId String?
+  post   Post?   @relation(fields: [postId], references: [id])
+
+  @@index([receiverUserId])
+}
+
+enum NotificationType {
+  ADMIN
+  LIKE
+  REPLY
+  FOLLOW
+  REPOST
+  QUOTE
+}
+
+enum PostPrivacy {
+  FOLLOWED
+  ANYONE
+  MENTIONED
+}
+
+model Report {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  reason    String
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
