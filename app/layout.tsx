@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Manrope, Poppins } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
+import Providers from "@/Providers";
+import { cn } from "@/lib/utils";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -34,9 +36,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${manrope.variable} ${poppins.variable} smooth-scroll min-h-screen bg-background antialiased`}
+        className={cn(
+          manrope.variable,
+          poppins.variable,
+          "smooth-scroll min-h-screen bg-background antialiased"
+        )}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
