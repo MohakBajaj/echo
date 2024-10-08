@@ -12,6 +12,8 @@ model User {
   createdAt             DateTime        @default(now()) @map(name: "created_at")
   updatedAt             DateTime        @default(now()) @map(name: "updated_at")
   userHash              String          @unique
+  collegeId             String
+  college               College         @relation(fields: [collegeId], references: [id])
   username              String          @unique
   bio                   String?
   privacy               Privacy         @default(PUBLIC)
@@ -29,6 +31,16 @@ model User {
   Authenticator         Authenticator[]
 
   @@unique([createdAt, id])
+}
+
+model College {
+  id        String   @id @default(cuid())
+  name      String
+  domain    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User User[]
 }
 
 enum Privacy {
