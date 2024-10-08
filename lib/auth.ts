@@ -24,10 +24,7 @@ export const config = {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-        if (
-          credentials.email === "admin" &&
-          credentials.password === "password"
-        ) {
+        if (credentials.email === "admin" && credentials.password === "1234") {
           return {
             id: "1",
             name: "Admin",
@@ -40,8 +37,8 @@ export const config = {
     }),
   ],
   callbacks: {
-    async session({ session, token }) {
-      return { ...session, ...token };
+    async session({ session }) {
+      return session;
     },
     async jwt({ token, user }) {
       if (user) {
