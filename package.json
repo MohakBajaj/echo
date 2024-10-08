@@ -14,11 +14,13 @@
     "prepare": "husky",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "email:dev": "email dev"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.6.0",
     "@plaiceholder/next": "^3.0.0",
+    "@react-email/components": "0.0.25",
     "@tanstack/react-query": "^5.59.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -33,6 +35,7 @@
     "sharp": "^0.33.5",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.23.8",
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
@@ -48,6 +51,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "prisma": "^5.20.0",
+    "react-email": "3.0.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }

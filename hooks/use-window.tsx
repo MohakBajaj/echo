@@ -32,9 +32,13 @@ export default function useWindow(): WindowDimensions {
   }, []);
 
   const isMobile: boolean =
-    typeof windowSize.width === "number" && windowSize.width < 768;
+    typeof windowSize.width === "number" &&
+    windowSize.width < 768 &&
+    /Mobi|Android/i.test(window.navigator.userAgent);
   const isDesktop: boolean =
-    typeof windowSize.width === "number" && windowSize.width >= 768;
+    typeof windowSize.width === "number" &&
+    windowSize.width >= 768 &&
+    !/Mobi|Android/i.test(window.navigator.userAgent);
 
   return { windowSize, isMobile, isDesktop };
 }

@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import crypto from "crypto";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -81,3 +82,38 @@ export const generateUserHash = (username: string, password: string) => {
 
   return userHash;
 };
+
+export function validateEmail(email: string): boolean {
+  const emailSchema = z.string().email();
+  return emailSchema.safeParse(email).success;
+}
+
+export function validatePassword(password: string): boolean {
+  const passwordSchema = z.string().min(8).max(50);
+  return passwordSchema.safeParse(password).success;
+}
+
+export function validateUsername(username: string): boolean {
+  const usernameSchema = z
+    .string()
+    .min(5)
+    .max(50)
+    .regex(/^[a-zA-Z0-9._]+$/);
+  return usernameSchema.safeParse(username).success;
+}
+
+export function generateCode(email: string): string {
+  const randomCode = crypto.randomBytes(3).toString("hex");
+  const hash = crypto.createHash("sha3-256");
+  hash.update(email + randomCode);
+  return hash.digest("hex").slice(0, 9) + randomCode;
+}
+
+export function verifyCode(email: string, code: string): boolean {
+  if (code.length !== 15) return false;
+  const providedHash = code.slice(0, 9);
+  const randomCode = code.slice(9);
+  const hash = crypto.createHash("sha3-256");
+  hash.update(email + randomCode);
+  return hash.digest("hex").slice(0, 9) === providedHash;
+}
