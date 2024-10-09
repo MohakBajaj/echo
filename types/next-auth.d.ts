@@ -5,17 +5,10 @@ declare module "next-auth" {
     id: string;
     username: string;
     college: string;
+    isAdmin: boolean;
   }
 
   interface Session {
     user: User;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string;
-    username: string;
-    college: string;
   }
 }

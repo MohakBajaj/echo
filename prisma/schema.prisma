@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id                    String          @id
+  id                    String          @id @default(cuid())
   createdAt             DateTime        @default(now()) @map(name: "created_at")
   updatedAt             DateTime        @default(now()) @map(name: "updated_at")
   userHash              String          @unique
@@ -21,13 +21,11 @@ model User {
   following             User[]          @relation(name: "followers")
   posts                 Post[]
   likedPosts            Like[]
-  isAdmin               Boolean?        @default(false) @map(name: "is_admin")
+  isAdmin               Boolean         @default(false) @map(name: "is_admin")
   reposts               Repost[]
   reports               Report[]
   senderNotifications   Notification[]  @relation("sender")
   receiverNotifications Notification[]  @relation("receiver")
-  Account               Account[]
-  Session               Session[]
   Authenticator         Authenticator[]
 
   @@unique([createdAt, id])
@@ -136,46 +134,6 @@ model Report {
   userId    String?
 }
 
-model Account {
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([provider, providerAccountId])
-}
-
-model Session {
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
-
-  @@id([identifier, token])
-}
-
-// Optional for WebAuthn support
 model Authenticator {
   credentialID         String  @unique
   userId               String

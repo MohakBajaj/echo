@@ -2,18 +2,20 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
+import type { Session } from "next-auth";
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({
+  children,
+  session,
+}: {
+  children: React.ReactNode;
+  session: Session | null;
+}) {
   const queryClient = new QueryClient();
 
   return (
-    <ThemeProvider
-      attribute="class"
-      enableSystem
-      defaultTheme="dark"
-      enableColorScheme
-    >
-      <SessionProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <SessionProvider session={session}>
         <QueryClientProvider client={queryClient}>
           {children}
         </QueryClientProvider>

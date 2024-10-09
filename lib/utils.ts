@@ -16,7 +16,8 @@ export async function fetcher<JSON = unknown>(
     const json = await res.json();
 
     if (!res.ok) {
-      const errorMessage = json.error?.message || "An error occurred";
+      const errorMessage =
+        json.error || json.error?.message || "An error occurred";
       console.error(`Fetch error: ${errorMessage}`);
       return [{ error: errorMessage } as unknown as JSON, res.status];
     }

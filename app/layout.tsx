@@ -4,6 +4,8 @@ import "./globals.css";
 import { siteConfig } from "@/config/site";
 import Providers from "@/Providers";
 import { cn } from "@/lib/utils";
+import { getServerSession } from "next-auth";
+import { Toaster } from "@/components/ui/sonner";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -28,21 +30,30 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession();
+
   return (
     <html lang="en">
       <body
         className={cn(
-          manrope.variable,
+          manrope.className,
           poppins.variable,
           "smooth-scroll min-h-screen bg-background antialiased"
         )}
       >
-        <Providers>{children}</Providers>
+        <Providers session={session}>
+          {children}
+          <Toaster
+            position="top-right"
+            visibleToasts={3}
+            pauseWhenPageIsHidden
+          />
+        </Providers>
       </body>
     </html>
   );

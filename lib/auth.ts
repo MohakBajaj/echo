@@ -1,38 +1,68 @@
-import type {
-  GetServerSidePropsContext,
-  NextApiRequest,
-  NextApiResponse,
-} from "next";
 import type { NextAuthOptions, User } from "next-auth";
-import { getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
-import type { Adapter } from "next-auth/adapters";
+import { randomBytes } from "crypto";
+import { generateUserHash, validateEmail, validatePassword } from "./utils";
 
 export const config = {
   secret: process.env.NEXTAUTH_SECRET,
-  adapter: PrismaAdapter(db) as Adapter,
+  session: {
+    strategy: "jwt",
+    maxAge: 60 * 60 * 24 * 30,
+    updateAge: 60 * 60 * 24,
+    generateSessionToken: () => {
+      return randomBytes(64).toString("hex");
+    },
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-        if (credentials.email === "admin" && credentials.password === "1234") {
-          return {
-            id: "1",
-            name: "Admin",
-            username: "admin",
-            college: "Example University",
-          } satisfies User;
+        if (
+          !validateEmail(credentials.email) ||
+          !validatePassword(credentials.password)
+        ) {
+          return null;
         }
-        return null;
+
+        const userHash = generateUserHash(
+          credentials.email,
+          credentials.password
+        );
+
+        const user = await db.user.findUnique({
+          where: {
+            userHash,
+          },
+          select: {
+            id: true,
+            username: true,
+            college: {
+              select: {
+                name: true,
+              },
+            },
+            isAdmin: true,
+          },
+        });
+
+        if (!user) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          username: user.username,
+          college: user.college.name,
+          isAdmin: user.isAdmin,
+        };
       },
     }),
   ],
@@ -40,26 +70,9 @@ export const config = {
     async session({ session }) {
       return session;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.username = user.username;
-        token.college = user.college;
-      }
-      return token;
-    },
   },
   pages: {
-    signIn: "/login",
-    signOut: "/logout",
+    signIn: "/auth/login",
+    signOut: "/auth/logout",
   },
 } satisfies NextAuthOptions;
-
-export function auth(
-  ...args:
-    | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
-    | [NextApiRequest, NextApiResponse]
-    | []
-) {
-  return getServerSession(...args, config);
-}
