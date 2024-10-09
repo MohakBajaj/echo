@@ -90,7 +90,13 @@ export function validateEmail(email: string): boolean {
 }
 
 export function validatePassword(password: string): boolean {
-  const passwordSchema = z.string().min(8).max(50);
+  const passwordSchema = z
+    .string()
+    .min(8)
+    .max(50)
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    );
   return passwordSchema.safeParse(password).success;
 }
 

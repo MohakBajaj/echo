@@ -4,7 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,7 +29,7 @@ import {
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useQuery } from "@tanstack/react-query";
-import { fetcher } from "@/lib/utils";
+import { fetcher, validateEmail } from "@/lib/utils";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -53,6 +53,8 @@ export default function LoginPage() {
   const email = form.watch("email");
   const debouncedEmail = useDebounce(email, 500);
 
+  const isValidEmail = validateEmail(debouncedEmail);
+
   const { data: collegeData, isLoading: isValidatingCollege } = useQuery({
     queryKey: ["validateCollege", debouncedEmail],
     queryFn: async () => {
@@ -65,10 +67,9 @@ export default function LoginPage() {
             error: string;
           }
       >(`/api/validateCollege?email=${debouncedEmail}`);
-      console.log(data);
       return data;
     },
-    enabled: !!debouncedEmail,
+    enabled: !!debouncedEmail && isValidEmail,
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -123,87 +124,110 @@ export default function LoginPage() {
             </motion.h2>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-3 sm:space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm sm:text-base">
-                        Email address
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="Ex. 5000xxxxx@stu.upes.ac.in"
-                          autoFocus
-                          autoComplete="email"
-                          className="text-sm sm:text-base"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription className="text-xs sm:text-sm">
-                        {isValidatingCollege ? (
-                          <span className="text-yellow-500">
-                            Validating college...
-                          </span>
-                        ) : collegeData && "name" in collegeData ? (
-                          <span className="text-green-500">
-                            Validated: {collegeData.name}
-                          </span>
-                        ) : collegeData && "error" in collegeData ? (
-                          <span className="text-red-500">
-                            Error: {collegeData.error}
-                          </span>
-                        ) : (
-                          <span className="text-gray-500">
-                            The e-mail you use at the time of registration.
-                          </span>
-                        )}
-                      </FormDescription>
-                      <FormMessage className="text-xs sm:text-sm" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm sm:text-base">
-                        Password
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Enter your password"
-                          autoComplete="current-password"
-                          className="text-sm sm:text-base"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs sm:text-sm" />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  disabled={
-                    isLoading ||
-                    isValidatingCollege ||
-                    !collegeData ||
-                    "error" in collegeData
-                  }
-                  className="mt-4 w-full text-sm sm:mt-6 sm:text-base"
+            <AnimatePresence mode="wait">
+              <Form {...form}>
+                <motion.form
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-3 sm:space-y-4"
                 >
-                  {isLoading ? "Signing in..." : "Sign in"}
-                </Button>
-              </form>
-            </Form>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1, duration: 0.5 }}
+                  >
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base">
+                            Email address
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="Ex. 5000xxxxx@stu.upes.ac.in"
+                              autoFocus
+                              autoComplete="email"
+                              className="text-sm sm:text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription className="text-xs sm:text-sm">
+                            {isValidatingCollege ? (
+                              <span className="text-yellow-500">
+                                Validating college...
+                              </span>
+                            ) : collegeData && "name" in collegeData ? (
+                              <span className="text-green-500">
+                                Validated: {collegeData.name}
+                              </span>
+                            ) : collegeData && "error" in collegeData ? (
+                              <span className="text-red-500">
+                                Error: {collegeData.error}
+                              </span>
+                            ) : (
+                              <span className="text-gray-500">
+                                The e-mail you used at the time of registration.
+                              </span>
+                            )}
+                          </FormDescription>
+                          <FormMessage className="text-xs sm:text-sm" />
+                        </FormItem>
+                      )}
+                    />
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                  >
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm sm:text-base">
+                            Password
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="password"
+                              placeholder="Enter your password"
+                              autoComplete="current-password"
+                              className="text-sm sm:text-base"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs sm:text-sm" />
+                        </FormItem>
+                      )}
+                    />
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                  >
+                    <Button
+                      type="submit"
+                      disabled={
+                        isLoading ||
+                        isValidatingCollege ||
+                        !collegeData ||
+                        "error" in collegeData
+                      }
+                      className="mt-4 w-full text-sm sm:mt-6 sm:text-base"
+                    >
+                      {isLoading ? "Signing in..." : "Sign in"}
+                    </Button>
+                  </motion.div>
+                </motion.form>
+              </Form>
+            </AnimatePresence>
           </CardContent>
           <CardFooter className="flex flex-col">
             <Separator className="my-3 sm:my-4" />
@@ -226,7 +250,7 @@ export default function LoginPage() {
                 variant="outline"
                 className="w-full text-sm sm:text-base"
               >
-                <Link href="/register">Create an account</Link>
+                <Link href="/auth/signup">Create an account</Link>
               </Button>
             </motion.div>
           </CardFooter>
