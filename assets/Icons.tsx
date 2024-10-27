@@ -9,6 +9,7 @@ export const Icons = {
         borderRadius: 0,
         transform: "rotate(180deg)",
       }}
+      fill="currentColor"
       {...props}
     >
       <path
