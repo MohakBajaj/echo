@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { ipAddress } from "@vercel/functions";
 import { validateEmail } from "@/lib/utils";
 import { db } from "@/lib/db";
 import { Ratelimit } from "@upstash/ratelimit";
@@ -10,7 +11,7 @@ const ratelimit = new Ratelimit({
 });
 
 export async function GET(req: NextRequest) {
-  const ip = req.ip ?? "127.0.0.1";
+  const ip = ipAddress(req) ?? "127.0.0.1";
   const { success } = await ratelimit.limit(ip);
 
   if (!success) {

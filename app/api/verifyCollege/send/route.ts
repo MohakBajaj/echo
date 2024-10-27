@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { ipAddress } from "@vercel/functions";
 import { Resend } from "resend";
 import AccountVerificationEmailTemplate from "@/emails";
 import { generateCode } from "@/lib/utils";
@@ -14,7 +15,7 @@ const ratelimit = new Ratelimit({
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.ip ?? "127.0.0.1";
+    const ip = ipAddress(req) ?? "127.0.0.1";
     const { success } = await ratelimit.limit(ip);
 
     if (!success) {
