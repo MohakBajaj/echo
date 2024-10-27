@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { ipAddress } from "@vercel/functions";
 import { db } from "@/lib/db";
 import { generateUserHash, validateUsername } from "@/lib/utils";
 import { z } from "zod";
@@ -18,7 +19,7 @@ const signupSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.ip ?? "127.0.0.1";
+    const ip = ipAddress(req) ?? "127.0.0.1";
     const { success } = await ratelimit.limit(ip);
 
     if (!success) {
