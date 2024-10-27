@@ -18,7 +18,7 @@
     "email:dev": "email dev"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.7.2",
+    "@prisma/client": "^5.21.1",
     "@fluid-tailwind/tailwind-merge": "^0.0.3",
     "@hookform/resolvers": "^3.9.0",
     "@plaiceholder/next": "^3.0.0",

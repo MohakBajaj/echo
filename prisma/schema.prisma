@@ -29,6 +29,7 @@ model User {
   Authenticator         Authenticator[]
 
   @@unique([createdAt, id])
+  @@index([collegeId, username, userHash])
 }
 
 model College {
@@ -39,6 +40,8 @@ model College {
   updatedAt DateTime @updatedAt
 
   User User[]
+
+  @@index([name, domain])
 }
 
 enum Privacy {

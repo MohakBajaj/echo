@@ -28,7 +28,7 @@ export default function AccountVerificationEmailTemplate({ Code }: EmailProps) {
         <Body>
           <Container className="mx-auto max-w-2xl p-4">
             <Link
-              href="http://localhost:3000"
+              href="https://echo.bmohak.codes"
               className="mb-2 flex items-center"
             >
               <Icons.logo className="h-16 rotate-180" />{" "}
