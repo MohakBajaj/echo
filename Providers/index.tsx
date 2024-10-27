@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
+import { useId } from "react";
 
 export default function Providers({
   children,
@@ -11,10 +12,17 @@ export default function Providers({
   children: React.ReactNode;
   session: Session | null;
 }) {
+  const key = useId();
   const queryClient = new QueryClient();
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+    <ThemeProvider
+      key={key}
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem
+      enableColorScheme
+    >
       <SessionProvider session={session}>
         <QueryClientProvider client={queryClient}>
           {children}

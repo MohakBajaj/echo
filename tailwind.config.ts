@@ -1,13 +1,17 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
+import fluid, { extract, screens, fontSize } from "fluid-tailwind";
 
 const config: Config = {
   darkMode: ["class"],
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: {
+    files: [
+      "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+      "./components/**/*.{js,ts,jsx,tsx,mdx}",
+      "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    ],
+    extract,
+  },
   theme: {
     extend: {
       colors: {
@@ -58,8 +62,10 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
     },
+    screens,
+    fontSize,
   },
-  plugins: [animate],
+  plugins: [animate, fluid],
 } as const;
 
 export default config;

@@ -1,6 +1,6 @@
-// @ts-check
 import withPlaiceholder from "@plaiceholder/next";
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {};
 
 export default withPlaiceholder(nextConfig);

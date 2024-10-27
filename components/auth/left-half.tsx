@@ -5,8 +5,11 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { TypewriterEffectSmooth } from "../ui/typewriter-effect";
+import { useId } from "react";
 
 export default function AuthLeftHalf({ className }: { className: string }) {
+  const key = useId();
+
   return (
     <div id="login-header" className={cn("bg-foreground", className)}>
       <div className="flex h-dvh flex-col items-start justify-between p-4">
@@ -34,7 +37,7 @@ export default function AuthLeftHalf({ className }: { className: string }) {
           className="mt-52 flex flex-grow"
         >
           <TypewriterEffectSmooth
-            key={Math.random()}
+            key={key}
             words={[
               {
                 text: "Amplify",
