@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   openGraph: {
     images: [siteConfig.ogImage],
+    siteName: siteConfig.name,
+    url: siteConfig.url,
   },
   twitter: {
     card: "summary_large_image",
