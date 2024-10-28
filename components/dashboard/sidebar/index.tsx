@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import AppearanceButton from "./appearance-button";
 import { Heart, Home, Plus, Search, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useCreateDialog } from "@/store";
 
 const TRANSITION = {
   type: "spring",
@@ -15,19 +17,30 @@ const TRANSITION = {
 const ICON_SIZE = 24;
 
 const BASE_BUTTON_CLASSES =
-  "flex h-10 w-12 items-center justify-center rounded-md p-2 text-foreground transition-colors";
+  "flex h-12 w-16 items-center justify-center rounded-lg px-4 py-3 text-foreground transition-colors";
 
 const NAV_BUTTONS = [
-  { icon: Home, label: "Home", variant: "default" },
-  { icon: Search, label: "Search", variant: "default" },
-  { icon: Plus, label: "Create", variant: "muted" },
-  { icon: Heart, label: "Notifications", variant: "default" },
-  { icon: User, label: "Profile", variant: "default" },
+  { icon: Home, label: "Home", variant: "default", href: "/" },
+  { icon: Search, label: "Search", variant: "default", href: "/search" },
+  {
+    icon: Plus,
+    label: "Create",
+    variant: "muted",
+  },
+  {
+    icon: Heart,
+    label: "Notifications",
+    variant: "default",
+    href: "/notifications",
+  },
+  { icon: User, label: "Profile", variant: "default", href: "/profile" },
 ];
 
 export default function Sidebar() {
+  const router = useRouter();
+  const { setOpenCreateDialog } = useCreateDialog();
   return (
-    <div className="flex w-fit flex-col justify-between border-r border-border p-4">
+    <div className="flex w-fit flex-col justify-between p-4">
       {/* Logo */}
       <motion.div
         whileHover={{ scale: 1.05 }}
@@ -40,7 +53,7 @@ export default function Sidebar() {
         </Link>
       </motion.div>
       {/* Buttons */}
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-4">
         {NAV_BUTTONS.map((button) => (
           <motion.button
             key={button.label}
@@ -53,6 +66,11 @@ export default function Sidebar() {
               button.variant === "muted" &&
                 "bg-muted hover:text-slate-500 dark:hover:text-white"
             )}
+            onClick={() =>
+              button.href
+                ? router.push(button.href)
+                : button.label === "Create" && setOpenCreateDialog(true)
+            }
           >
             <button.icon size={ICON_SIZE} />
           </motion.button>
