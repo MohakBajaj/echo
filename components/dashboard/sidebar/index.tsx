@@ -7,6 +7,7 @@ import { Heart, Home, Plus, Search, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useCreateDialog } from "@/store";
+import { CreateDialog } from "../create-dialog";
 
 const TRANSITION = {
   type: "spring",
@@ -107,6 +108,8 @@ export default function Sidebar() {
           </motion.button>
         ))}
       </div>
+
+      <CreateDialog />
     </>
   );
 }

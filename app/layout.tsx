@@ -6,6 +6,7 @@ import Providers from "@/Providers";
 import { cn } from "@/lib/utils";
 import { getServerSession } from "next-auth";
 import { Toaster } from "@/components/ui/sonner";
+import { config } from "@/lib/auth";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -37,7 +38,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession();
+  const session = await getServerSession(config);
 
   return (
     <html lang="en" suppressHydrationWarning>

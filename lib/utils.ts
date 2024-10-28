@@ -10,6 +10,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function getAvatarURL(username: string) {
+  return new URL(
+    `https://api.dicebear.com/9.x/identicon/svg?seed=${username}&backgroundType=gradientLinear,solid&backgroundRotation=0,360,60,90,120,180,270,-60,-90,-120,-180,-270,-360&backgroundColor=b6e3f4,c0aede,ffd5dc,d1d4f9,ffdfbf`
+  ).toString();
+}
+
 export async function fetcher<JSON = unknown>(
   input: RequestInfo,
   init?: RequestInit

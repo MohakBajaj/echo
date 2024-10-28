@@ -8,11 +8,9 @@ export const config = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 24 * 30,
-    updateAge: 60 * 60 * 24,
-    generateSessionToken: () => {
-      return randomBytes(64).toString("hex");
-    },
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+    updateAge: 60 * 60 * 24, // 24 hours
+    generateSessionToken: () => randomBytes(64).toString("hex"),
   },
   providers: [
     CredentialsProvider({
@@ -22,9 +20,12 @@ export const config = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials): Promise<User | null> {
+        // Validate credentials exist
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
+
+        // Validate email and password format
         if (
           !validateEmail(credentials.email) ||
           !validatePassword(credentials.password)
@@ -37,17 +38,14 @@ export const config = {
           credentials.password
         );
 
+        // Find user in database
         const user = await db.user.findUnique({
-          where: {
-            userHash,
-          },
+          where: { userHash },
           select: {
             id: true,
             username: true,
             college: {
-              select: {
-                name: true,
-              },
+              select: { name: true },
             },
             isAdmin: true,
           },
@@ -57,6 +55,7 @@ export const config = {
           return null;
         }
 
+        // Return user data formatted for session
         return {
           id: user.id,
           username: user.username,
@@ -67,8 +66,20 @@ export const config = {
     }),
   ],
   callbacks: {
-    async session({ session }) {
+    async session({ session, token }) {
+      // Sync session with token data
+      session.user = { ...token };
       return session;
+    },
+    async jwt({ token, user }) {
+      // Add custom user data to JWT token
+      if (user) {
+        token.id = user.id;
+        token.username = user.username;
+        token.college = user.college;
+        token.isAdmin = user.isAdmin;
+      }
+      return token;
     },
   },
   pages: {

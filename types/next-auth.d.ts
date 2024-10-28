@@ -1,7 +1,7 @@
 import { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
-  interface User extends DefaultSession["user"] {
+  interface User {
     id: string;
     username: string;
     college: string;
@@ -9,6 +9,15 @@ declare module "next-auth" {
   }
 
   interface Session {
-    user: User;
+    user: Omit<User, keyof DefaultSession["user"]> & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    username: string;
+    college: string;
+    isAdmin: boolean;
   }
 }
