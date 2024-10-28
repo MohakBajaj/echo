@@ -39,21 +39,52 @@ const NAV_BUTTONS = [
 export default function Sidebar() {
   const router = useRouter();
   const { setOpenCreateDialog } = useCreateDialog();
+
   return (
-    <div className="flex w-fit flex-col justify-between p-4">
-      {/* Logo */}
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        transition={TRANSITION}
-      >
-        <Link href="/" className="text-foreground">
-          <Icons.logo className="size-12" />
-          <span className="sr-only">Echo</span>
-        </Link>
-      </motion.div>
-      {/* Buttons */}
-      <div className="flex flex-col space-y-4">
+    <>
+      {/* Desktop Sidebar */}
+      <div className="hidden w-fit flex-col justify-between p-4 sm:flex">
+        {/* Logo */}
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={TRANSITION}
+        >
+          <Link href="/" className="text-foreground">
+            <Icons.logo className="size-12" />
+            <span className="sr-only">Echo</span>
+          </Link>
+        </motion.div>
+        {/* Buttons */}
+        <div className="flex flex-col space-y-4">
+          {NAV_BUTTONS.map((button) => (
+            <motion.button
+              key={button.label}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={TRANSITION}
+              className={cn(
+                BASE_BUTTON_CLASSES,
+                button.variant === "default" && "bg-background hover:bg-muted",
+                button.variant === "muted" &&
+                  "bg-muted hover:text-slate-500 dark:hover:text-white"
+              )}
+              onClick={() =>
+                button.href
+                  ? router.push(button.href)
+                  : button.label === "Create" && setOpenCreateDialog(true)
+              }
+            >
+              <button.icon size={ICON_SIZE} />
+            </motion.button>
+          ))}
+        </div>
+        {/* Appearance */}
+        <AppearanceButton />
+      </div>
+
+      {/* Mobile Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 flex w-full justify-around border-t border-border bg-background p-2 sm:hidden">
         {NAV_BUTTONS.map((button) => (
           <motion.button
             key={button.label}
@@ -72,12 +103,10 @@ export default function Sidebar() {
                 : button.label === "Create" && setOpenCreateDialog(true)
             }
           >
-            <button.icon size={ICON_SIZE} />
+            <button.icon size={20} />
           </motion.button>
         ))}
       </div>
-      {/* Appearance */}
-      <AppearanceButton />
-    </div>
+    </>
   );
 }
