@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import AppearanceButton from "./appearance-button";
 import { Heart, Home, Plus, Search, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCreateDialog } from "@/store";
 import { CreateDialog } from "../create-dialog";
 
@@ -18,7 +18,7 @@ const TRANSITION = {
 const ICON_SIZE = 24;
 
 const BASE_BUTTON_CLASSES =
-  "flex h-12 w-16 items-center justify-center rounded-lg px-4 py-3 text-foreground transition-colors";
+  "flex h-12 w-16 items-center justify-center rounded-lg px-4 py-3 text-muted-foreground transition-colors";
 
 const NAV_BUTTONS = [
   { icon: Home, label: "Home", variant: "default", href: "/" },
@@ -39,6 +39,7 @@ const NAV_BUTTONS = [
 
 export default function Sidebar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { setOpenCreateDialog } = useCreateDialog();
 
   return (
@@ -66,6 +67,7 @@ export default function Sidebar() {
               transition={TRANSITION}
               className={cn(
                 BASE_BUTTON_CLASSES,
+                button.href === pathname && "text-foreground",
                 button.variant === "default" && "bg-background hover:bg-muted",
                 button.variant === "muted" &&
                   "bg-muted hover:text-slate-500 dark:hover:text-white"
