@@ -3,22 +3,25 @@
 import { useState, useRef } from "react";
 import useWindow from "@/hooks/use-window";
 import { useCreateDialog, usePost } from "@/store";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn, getAvatarURL } from "@/lib/utils";
-import {
-  FilesIcon,
-  Globe,
-  ImageIcon,
-  Lock,
-  MapPin,
-  Users,
-  Video,
-} from "lucide-react";
+import { Globe, ImageIcon, Lock, Users, Video, X } from "lucide-react";
 import { PostPrivacy } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { createRoot } from "react-dom/client";
 
 const TRANSITION = {
   type: "spring",
@@ -35,6 +38,9 @@ export function CreateDialog() {
       <Drawer open={openCreateDialog} onOpenChange={setOpenCreateDialog}>
         <DrawerContent className="h-[100dvh]">
           <DrawerTitle className="sr-only">Create New Echo</DrawerTitle>
+          <DrawerDescription className="sr-only">
+            Create a new echo to share with your followers
+          </DrawerDescription>
           <Content className="pt-2" />
         </DrawerContent>
       </Drawer>
@@ -45,6 +51,9 @@ export function CreateDialog() {
     <Dialog open={openCreateDialog} onOpenChange={setOpenCreateDialog}>
       <DialogContent className="min-h-[25dvh] min-w-[30dvw] p-0" hideClose>
         <DialogTitle className="sr-only">Create New Echo</DialogTitle>
+        <DialogDescription className="sr-only">
+          Create a new echo to share with your followers
+        </DialogDescription>
         <Content />
       </DialogContent>
     </Dialog>
@@ -78,14 +87,6 @@ const mediaOptions = [
     label: "video",
     icon: Video,
   },
-  {
-    label: "file",
-    icon: FilesIcon,
-  },
-  {
-    label: "location",
-    icon: MapPin,
-  },
 ];
 
 function Content({ className }: { className?: string }) {
@@ -95,7 +96,7 @@ function Content({ className }: { className?: string }) {
   const { postPrivacy, setPostPrivacy } = usePost();
   const { data: session } = useSession();
   const avatarURL = getAvatarURL(session?.user?.name ?? "");
-
+  const mediaRef = useRef<HTMLDivElement>(null);
   return (
     <div className={cn(className, "flex flex-col")}>
       {/* header */}
@@ -133,6 +134,8 @@ function Content({ className }: { className?: string }) {
             rows={1}
             className="no-scrollbar resize-x-none rounded-md bg-background p-2 focus:outline-none"
           />
+          {/* Media Masonry grid */}
+          <div className="grid grid-cols-3 gap-2" ref={mediaRef}></div>
           <div className="flex flex-wrap items-center gap-2">
             {mediaOptions.map((option) => (
               <motion.button
@@ -141,6 +144,63 @@ function Content({ className }: { className?: string }) {
                 whileTap={{ scale: 0.98 }}
                 transition={TRANSITION}
                 className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-foreground transition-colors hover:bg-muted"
+                onClick={
+                  option.label === "image"
+                    ? () => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+                        input.accept = "image/*";
+                        input.multiple = true;
+                        input.click();
+                        input.onchange = () => {
+                          if (!input.files?.length) return;
+                          // Only allow up to 9 total media items
+                          const currentMediaCount =
+                            mediaRef.current?.children.length ?? 0;
+                          const remainingSlots = 9 - currentMediaCount;
+                          if (remainingSlots <= 0) return;
+
+                          const files = Array.from(input.files).slice(
+                            0,
+                            remainingSlots
+                          );
+                          files.forEach((file) => {
+                            const mediaItem = document.createElement("div");
+                            const url = URL.createObjectURL(file);
+                            const root = createRoot(mediaItem);
+                            root.render(<MediaItem type="image" src={url} />);
+                            mediaRef.current?.appendChild(mediaItem);
+                          });
+                        };
+                      }
+                    : () => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+                        input.accept = "video/*";
+                        input.multiple = true;
+                        input.click();
+                        input.onchange = () => {
+                          if (!input.files?.length) return;
+                          // Only allow up to 9 total media items
+                          const currentMediaCount =
+                            mediaRef.current?.children.length ?? 0;
+                          const remainingSlots = 9 - currentMediaCount;
+                          if (remainingSlots <= 0) return;
+
+                          const files = Array.from(input.files).slice(
+                            0,
+                            remainingSlots
+                          );
+                          files.forEach((file) => {
+                            const mediaItem = document.createElement("div");
+                            const url = URL.createObjectURL(file);
+                            const root = createRoot(mediaItem);
+                            root.render(<MediaItem type="video" src={url} />);
+                            mediaRef.current?.appendChild(mediaItem);
+                          });
+                        };
+                      }
+                }
               >
                 <option.icon size={16} />
                 <span className="capitalize">{option.label}</span>
@@ -218,6 +278,56 @@ function Content({ className }: { className?: string }) {
           Echo
         </motion.button>
       </div>
+    </div>
+  );
+}
+
+function MediaItem({ type, src }: { type: "image" | "video"; src: string }) {
+  if (type === "image") {
+    return (
+      <div className="relative">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={type}
+          className="aspect-square rounded-md object-cover"
+        />
+        <button
+          className="absolute right-1 top-1 rounded-full bg-background/80 p-1 hover:bg-background"
+          onClick={() => {
+            // Find and remove parent element
+            const parent = document.querySelector(`img[src="${src}"]`)
+              ?.parentElement?.parentElement;
+            parent?.remove();
+          }}
+        >
+          <X size={16} />
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="relative">
+      <video
+        src={src}
+        controls
+        controlsList="nodownload"
+        playsInline
+        preload="metadata"
+        className="aspect-square rounded-md object-contain focus:outline-none"
+        onContextMenu={(e) => e.preventDefault()}
+      />
+      <button
+        className="absolute right-1 top-1 rounded-md bg-background/80 p-1 hover:bg-background"
+        onClick={() => {
+          // Find and remove parent element
+          const parent = document.querySelector(`video[src="${src}"]`)
+            ?.parentElement?.parentElement;
+          parent?.remove();
+        }}
+      >
+        <X size={16} />
+      </button>
     </div>
   );
 }

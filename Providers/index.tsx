@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import { useId } from "react";
+import HolyLoader from "holy-loader";
 
 export default function Providers({
   children,
@@ -23,6 +24,7 @@ export default function Providers({
       enableSystem
       enableColorScheme
     >
+      <HolyLoader height={2} />
       <SessionProvider session={session}>
         <QueryClientProvider client={queryClient}>
           {children}

@@ -3,6 +3,7 @@ import { getAvatarURL } from "@/lib/utils";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { config } from "@/lib/auth";
+import PageLayout from "@/components/dashboard/PageLayout";
 
 export default async function DashboardLayout({
   children,
@@ -15,7 +16,9 @@ export default async function DashboardLayout({
   return (
     <div className="flex h-dvh">
       <Sidebar />
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="no-scrollbar mx-auto h-dvh max-w-xl flex-1">
+        <PageLayout>{children}</PageLayout>
+      </main>
       {/* prefetch the avatar */}
       <Link href={avatarURL} className="invisible hidden" />
     </div>

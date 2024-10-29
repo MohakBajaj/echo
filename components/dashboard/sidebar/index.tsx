@@ -96,6 +96,7 @@ export default function Sidebar() {
             transition={TRANSITION}
             className={cn(
               BASE_BUTTON_CLASSES,
+              button.href === pathname && "text-foreground",
               button.variant === "default" && "bg-background hover:bg-muted",
               button.variant === "muted" &&
                 "bg-muted hover:text-slate-500 dark:hover:text-white"
@@ -110,6 +111,16 @@ export default function Sidebar() {
           </motion.button>
         ))}
       </div>
+
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={TRANSITION}
+        className="fixed bottom-8 right-8 hidden rounded-xl border border-foreground bg-muted px-6 py-3.5 md:block"
+        onClick={() => setOpenCreateDialog(true)}
+      >
+        <Plus size={32} />
+      </motion.button>
 
       <CreateDialog />
     </>
