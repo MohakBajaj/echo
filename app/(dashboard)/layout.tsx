@@ -14,7 +14,7 @@ export default async function DashboardLayout({
   const avatarURL = getAvatarURL(session?.user?.username ?? "");
 
   return (
-    <div className="flex h-dvh">
+    <div className="flex h-dvh overflow-hidden">
       <Sidebar />
       <main className="no-scrollbar mx-auto h-dvh max-w-xl flex-1">
         <PageLayout>{children}</PageLayout>
