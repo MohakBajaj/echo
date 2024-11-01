@@ -24,7 +24,10 @@ export default function Providers({
       enableSystem
       enableColorScheme
     >
-      <HolyLoader height={2} />
+      {/* HolyLoader
+        color: #CECDC3 - (foreground in css)
+      */}
+      <HolyLoader height={2} color="#CECDC3" />
       <SessionProvider session={session}>
         <QueryClientProvider client={queryClient}>
           {children}

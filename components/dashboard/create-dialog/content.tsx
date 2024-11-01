@@ -6,8 +6,9 @@ import { PostPrivacy } from "@prisma/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { Globe, ImageIcon, Lock, Users, Video } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { MediaItem } from "./media-item";
+import useOutsideClick from "@/hooks/use-click-outside";
 
 const TRANSITION = {
   type: "spring",
@@ -59,6 +60,11 @@ export function Content({ className }: { className?: string }) {
   const [mediaFiles, setMediaFiles] = useState<
     { file: File; type: "image" | "video"; url: string }[]
   >([]);
+
+  const privacyRef = useRef<HTMLDivElement>(null);
+  useOutsideClick(privacyRef as React.RefObject<HTMLElement>, () =>
+    setIsOpen(false)
+  );
 
   const handleMediaUpload = useCallback(
     (files: FileList, type: "image" | "video") => {
@@ -228,11 +234,12 @@ export function Content({ className }: { className?: string }) {
           <AnimatePresence>
             {isOpen && (
               <motion.div
+                ref={privacyRef}
                 className="absolute bottom-0 left-0 w-[200px] overflow-hidden rounded-lg border border-border bg-background shadow-lg outline-none"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                transition={{ type: "spring", bounce: 0, duration: 0.2 }}
+                transition={TRANSITION}
               >
                 <div className="flex flex-col p-1">
                   {privacyOptions.map((option) => (
