@@ -1,0 +1,11 @@
+echo '🏗️👷 Building your project before pushing'
+
+bun run build ||
+(
+    echo '❌👷🔨❌ Better call Bob... Because your build failed ❌👷🔨❌
+            Next build failed: View the errors above to see why. 
+    '
+    false;
+)
+
+echo '✅✅✅✅ Build successful! Pushing changes... ✅✅✅✅' 
