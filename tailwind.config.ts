@@ -16,6 +16,7 @@ const config: Config = {
     extend: {
       colors: {
         background: "hsl(var(--background))",
+        backgroundTW: "hsl(var(--backgroundTW))",
         foreground: "hsl(var(--foreground))",
         card: {
           DEFAULT: "hsl(var(--card))",
@@ -24,6 +25,10 @@ const config: Config = {
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
+        },
+        primaryTW: {
+          DEFAULT: "hsl(var(--primaryTW))",
+          foreground: "hsl(var(--primaryTW-foreground))",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",

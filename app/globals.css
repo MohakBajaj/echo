@@ -54,21 +54,23 @@ body {
   [data-theme="dark"],
   .dark {
     /* Base colors */
-    --background: 240 4% 6%; /* #100F0F - fl-black (Primary background) */
-    --foreground: 43 3% 78%; /* #CECDC3 - fl-base-200 (Primary text) */
+    --background: 240 4% 6%; /* #100F0F - fl-black (Primary background) RIGHT BACKGROUND*/
+    --backgroundTW: 0 0% 100%; /* #ffffff - white (Primary background) TYPEWRTIER*/
+    --foreground: 210 15% 5%; /* #0b0d0f - fl-base-950 (Primary text) LEFT BACKGROUND*/
     --muted: 240 2% 15%; /* #282726 - fl-base-900 (UI elements) */
-    --muted-foreground: 60 2% 52%; /* #878580 - fl-base-500 (Secondary text) */
+    --muted-foreground: 60 2% 52%; /* #878580 - fl-base-500 (Secondary text) INPUT FIELDS PLACEHOLDER*/
     --popover: 240 4% 6%; /* #100F0F - fl-black (Popover background) */
     --popover-foreground: 43 3% 78%; /* #CECDC3 - fl-base-200 (Popover text) */
-    --card: 240 3% 11%; /* #1C1B1A - fl-base-950 (Secondary background) */
+    --card: 240 3% 11%; /* #1C1B1A - fl-base-950 (Secondary background) RIGHT CARD BG*/
     --card-foreground: 43 3% 78%; /* #CECDC3 - fl-base-200 (Card text) */
     --border: 240 2% 15%; /* #282726 - fl-base-900 (Borders) */
     --input: 240 2% 15%; /* #282726 - fl-base-900 (Form elements) */
 
     /* Accent colors - Dark */
-    --primary: 212 68% 39%; /* #205EA6 - fl-blue-600 (Primary actions) */
-    --secondary: 71 85% 27%; /* #66800B - fl-green-600 (Success states) */
-    --accent: 176 56% 33%; /* #24837B - fl-cyan-600 (Links, active states) */
+    --primaryTW: 300 47% 42%; /* #9d399d - fl-pink (Primary actions) TYPEWRITER */
+    --primary: 300 39% 40%; /* #8e3e8e - fl-pink (Primary actions) SENDCODE & SIGNUP BUTTON BG*/
+    --secondary: 300 30% 70%; /* #c99cc9 - fl-pink  LOGO & BOTTOMtext*/
+    --accent: 300 65% 28%; /* #ad1fa2 - fl-pink (Links, active states) */
     --destructive: 4 63% 42%; /* #AF3029 - fl-red-600 (Error states) */
     --ring: 212 68% 39%; /* #205EA6 - fl-blue-600 (Focus rings) */
 
@@ -79,7 +81,8 @@ body {
     --magenta: 329 54% 41%; /* #A02F6F - fl-magenta-600 */
 
     /* Consistent foregrounds */
-    --primary-foreground: 0 0% 100%; /* #FFFFFF - white */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF - white   SEND CODE & SIGNUP BUTTON TEXT*/
+    --primaryTW-foreground: 0 0% 100%; /* #FFFFFF - white   TYPEWRITER */
     --secondary-foreground: 0 0% 100%; /* #FFFFFF - white */
     --accent-foreground: 0 0% 100%; /* #FFFFFF - white */
     --destructive-foreground: 0 0% 100%; /* #FFFFFF - white */
@@ -92,24 +95,23 @@ body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
 
   .no-scrollbar {
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 
   .text-overflow-ellipsis {
     display: -webkit-box;
-    -webkit-line-clamp: 3;
-    /* Number of lines to show */
+    -webkit-line-clamp: 3; /* Number of lines to show */
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
