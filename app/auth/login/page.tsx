@@ -149,7 +149,7 @@ export default function LoginPage() {
                           <FormControl>
                             <Input
                               type="email"
-                              placeholder="Ex. 5000xxxxx@stu.upes.ac.in"
+                              placeholder="Eg. 5000xxxxx@stu.upes.ac.in"
                               autoFocus
                               autoComplete="email"
                               className="text-sm sm:text-base"

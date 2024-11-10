@@ -183,7 +183,7 @@ export const TypewriterEffectSmooth = ({
           repeatType: "reverse",
         }}
         className={cn(
-          "block w-[4px] rounded-sm bg-gradient-to-t from-primary to-background",
+          "block w-[4px] rounded-sm bg-gradient-to-t from-primaryTW to-backgroundTW",
           cursorClassName || "h-4 sm:h-6 xl:h-12"
         )}
       ></motion.span>
