@@ -89,8 +89,8 @@ export const TypewriterEffect = ({
           repeatType: "reverse",
         }}
         className={cn(
-          "inline-block h-4 w-[4px] rounded-sm bg-gradient-to-t from-primary to-background md:h-6 lg:h-10",
-          cursorClassName
+          "block w-[4px] rounded-sm bg-gradient-to-t from-primaryTW to-backgroundTW",
+          cursorClassName || "h-4 sm:h-6 xl:h-12"
         )}
       ></motion.span>
     </div>

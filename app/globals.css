@@ -17,7 +17,8 @@ body {
   :root {
     /* Base colors */
     --background: 48 100% 97%; /* #FFFCF0 - fl-paper (Primary background) */
-    --foreground: 240 4% 6%; /* #100F0F - fl-black (Primary text) */
+    --backgroundTW: 200 29% 90%; /* #dee8ed TYPEWRITER*/
+    --foreground: 220 12% 90%; /* #e2e4e9 - fl-grey (Primary text)  */
     --muted: 43 19% 90%; /* #E6E4D9 - fl-base-100 (UI elements) */
     --muted-foreground: 60 2% 42%; /* #6F6E69 - fl-base-600 (Secondary text) */
     --popover: 48 100% 97%; /* #FFFCF0 - fl-paper (Popover background) */
@@ -28,9 +29,10 @@ body {
     --input: 43 19% 90%; /* #E6E4D9 - fl-base-100 (Form elements) */
 
     /* Accent colors - Light */
-    --primary: 209 49% 50%; /* #4385BE - fl-blue (Primary actions) */
-    --secondary: 74 46% 41%; /* #879A39 - fl-green (Success states) */
-    --accent: 176 46% 45%; /* #3AA99F - fl-cyan (Links, active states) */
+    --primaryTW: 230 40% 45%; /*#36417d  TYPEWRITER*/
+    --primary: 240 40% 40%; /* #3d3d8f - fl-blue-gray (Primary actions) */
+    --secondary: 240 25% 40%; /* #4d4d80 - fl-blue-gray (Success states) */
+    --accent: 210 80% 42%; /* #154fc1 - fl-teal (Links, active states)  */
     --destructive: 4 68% 54%; /* #D14D41 - fl-red (Error states) */
     --ring: 209 49% 50%; /* #4385BE - fl-blue (Focus rings) */
 
@@ -47,7 +49,7 @@ body {
     --destructive-foreground: 0 0% 100%; /* #FFFFFF - white */
     --ring: 209 49% 50%; /* #4385BE - fl-blue (Focus rings) */
 
-    --radius: 0.5rem;
+    --radius: 0.7rem;
   }
 
   /* Flexoki Dark Theme */
@@ -55,7 +57,7 @@ body {
   .dark {
     /* Base colors */
     --background: 240 4% 6%; /* #100F0F - fl-black (Primary background) RIGHT BACKGROUND*/
-    --backgroundTW: 0 0% 100%; /* #ffffff - white (Primary background) TYPEWRTIER*/
+    --backgroundTW: 100 50% 10%; /* #ffffff - white (Primary background) TYPEWRTIER*/
     --foreground: 210 15% 5%; /* #0b0d0f - fl-base-950 (Primary text) LEFT BACKGROUND*/
     --muted: 240 2% 15%; /* #282726 - fl-base-900 (UI elements) */
     --muted-foreground: 60 2% 52%; /* #878580 - fl-base-500 (Secondary text) INPUT FIELDS PLACEHOLDER*/

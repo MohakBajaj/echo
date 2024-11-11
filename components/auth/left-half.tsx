@@ -49,7 +49,7 @@ export default function AuthLeftHalf({ className }: { className: string }) {
               },
               {
                 text: "Voice.",
-                className: "text-secondary",
+                className: "text-accent",
               },
               {
                 text: "Anonymously.",
