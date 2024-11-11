@@ -57,8 +57,8 @@ body {
   .dark {
     /* Base colors */
     --background: 240 4% 6%; /* #100F0F - fl-black (Primary background) RIGHT BACKGROUND*/
-    --backgroundTW: 100 50% 10%; /* #ffffff - white (Primary background) TYPEWRTIER*/
-    --foreground: 210 15% 5%; /* #0b0d0f - fl-base-950 (Primary text) LEFT BACKGROUND*/
+    --backgroundTW: 0 0% 100%; /* #ffffff - white (Primary background) TYPEWRTIER*/
+    --foreground: 240 30% 10%; /* #0b0d0f - fl-base-950 (Primary text) LEFT BACKGROUND*/
     --muted: 240 2% 15%; /* #282726 - fl-base-900 (UI elements) */
     --muted-foreground: 60 2% 52%; /* #878580 - fl-base-500 (Secondary text) INPUT FIELDS PLACEHOLDER*/
     --popover: 240 4% 6%; /* #100F0F - fl-black (Popover background) */
@@ -69,10 +69,10 @@ body {
     --input: 240 2% 15%; /* #282726 - fl-base-900 (Form elements) */
 
     /* Accent colors - Dark */
-    --primaryTW: 300 47% 42%; /* #9d399d - fl-pink (Primary actions) TYPEWRITER */
-    --primary: 300 39% 40%; /* #8e3e8e - fl-pink (Primary actions) SENDCODE & SIGNUP BUTTON BG*/
-    --secondary: 300 30% 70%; /* #c99cc9 - fl-pink  LOGO & BOTTOMtext*/
-    --accent: 300 65% 28%; /* #ad1fa2 - fl-pink (Links, active states) */
+    --primaryTW: 240 80% 50%; /* #9d399d - fl-pink (Primary actions) TYPEWRITER */
+    --primary: 222 70% 50%; /* #8e3e8e - fl-pink (Primary actions) SENDCODE & SIGNUP BUTTON BG*/
+    --secondary: 240 60% 80%; /* #c99cc9 - fl-pink  LOGO & BOTTOMtext*/
+    --accent: 222 77% 30%; /* #ad1fa2 - fl-pink (Links, active states) */
     --destructive: 4 63% 42%; /* #AF3029 - fl-red-600 (Error states) */
     --ring: 212 68% 39%; /* #205EA6 - fl-blue-600 (Focus rings) */
 
