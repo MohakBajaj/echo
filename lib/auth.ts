@@ -67,18 +67,30 @@ export const config = {
   ],
   callbacks: {
     async session({ session, token }) {
-      // Sync session with token data
-      session.user = { ...token };
+      // Ensure we're always using the token data
+      session.user = {
+        ...session.user,
+        id: token.id,
+        username: token.username,
+        college: token.college,
+        isAdmin: token.isAdmin,
+      };
       return session;
     },
-    async jwt({ token, user }) {
-      // Add custom user data to JWT token
+    async jwt({ token, user, trigger, session }) {
+      // Initial sign in
       if (user) {
         token.id = user.id;
         token.username = user.username;
         token.college = user.college;
         token.isAdmin = user.isAdmin;
       }
+
+      // Handle username update
+      if (trigger === "update" && session?.user?.username) {
+        token.username = session.user.username;
+      }
+
       return token;
     },
   },

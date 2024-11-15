@@ -25,6 +25,11 @@ type PostState = {
   setPostPrivacy: (privacy: PostPrivacy) => void;
 };
 
+type EditProfileState = {
+  openEditProfileDialog: boolean;
+  setOpenEditProfileDialog: (open: boolean) => void;
+};
+
 export const useCreateDialog = create<CreateDialogState>((set) => ({
   openCreateDialog: false,
   setOpenCreateDialog: (open) => set({ openCreateDialog: open }),
@@ -47,4 +52,9 @@ export const useImageStore = create<ImageStore>((set) => ({
 export const usePost = create<PostState>((set) => ({
   postPrivacy: PostPrivacy.ANYONE,
   setPostPrivacy: (privacy) => set({ postPrivacy: privacy }),
+}));
+
+export const useEditProfileDialog = create<EditProfileState>((set) => ({
+  openEditProfileDialog: false,
+  setOpenEditProfileDialog: (open) => set({ openEditProfileDialog: open }),
 }));

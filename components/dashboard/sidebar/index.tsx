@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useCreateDialog } from "@/store";
 import { CreateDialog } from "../create-dialog";
+import { useSession } from "next-auth/react";
 
 const TRANSITION = {
   type: "spring",
@@ -40,6 +41,7 @@ const NAV_BUTTONS = [
 export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { data: session } = useSession();
   const { setOpenCreateDialog } = useCreateDialog();
 
   return (
@@ -74,7 +76,9 @@ export default function Sidebar() {
               )}
               onClick={() =>
                 button.href
-                  ? router.push(button.href)
+                  ? button.href === "/profile"
+                    ? router.push(`/profile/@${session?.user?.username}`)
+                    : router.push(button.href)
                   : button.label === "Create" && setOpenCreateDialog(true)
               }
             >
@@ -99,11 +103,16 @@ export default function Sidebar() {
               button.href === pathname && "text-foreground",
               button.variant === "default" && "bg-background hover:bg-muted",
               button.variant === "muted" &&
-                "bg-muted hover:text-slate-500 dark:hover:text-white"
+                "bg-muted hover:text-slate-500 dark:hover:text-white",
+              button.href === "/profile" &&
+                pathname === `/profile/@${session?.user?.username}` &&
+                "text-foreground"
             )}
             onClick={() =>
               button.href
-                ? router.push(button.href)
+                ? button.href === "/profile"
+                  ? router.push(`/profile/@${session?.user?.username}`)
+                  : router.push(button.href)
                 : button.label === "Create" && setOpenCreateDialog(true)
             }
           >
