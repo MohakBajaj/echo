@@ -13,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditProfileDialog from "@/components/dashboard/profile/edit-profile";
 import { ProfileData } from "@/types/profile";
 import { useParams } from "next/navigation";
+import { Lock } from "lucide-react";
 
 export default function ProfilePage() {
   const { handle } = useParams();
@@ -100,15 +101,24 @@ export default function ProfilePage() {
         </motion.button>
       )}
       <Separator />
-      <Tabs defaultValue="posts">
-        <TabsList className="mb-4 w-full justify-evenly">
-          {["posts", "replies", "reposts"].map((tab) => (
-            <TabsTrigger key={tab} value={tab} className="w-1/3 capitalize">
-              {tab}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+      {profileData.privacy === "PUBLIC" || isOwnProfile ? (
+        <Tabs defaultValue="posts">
+          <TabsList className="mb-4 w-full justify-evenly">
+            {["posts", "replies", "reposts"].map((tab) => (
+              <TabsTrigger key={tab} value={tab} className="w-1/3 capitalize">
+                {tab}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      ) : (
+        <div className="flex w-full flex-col items-center justify-center gap-3 py-8">
+          <Lock className="size-12 text-muted-foreground" />
+          <p className="text-center text-sm font-medium text-muted-foreground">
+            This profile is private. Only followers can see their posts.
+          </p>
+        </div>
+      )}
       {isOwnProfile && (
         <EditProfileDialog
           initialData={{

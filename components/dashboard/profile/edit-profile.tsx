@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useSession } from "next-auth/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { fetcher } from "@/lib/utils";
 import { ProfileData, ProfileUpdateData } from "@/types/profile";
 import { toast } from "sonner";
@@ -37,6 +37,7 @@ import {
 import { Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useDebounce } from "@/hooks/use-debounce";
 
 const TRANSITION = {
   type: "spring",
@@ -74,6 +75,24 @@ function Content({ initialData, className }: EditProfileDialogProps) {
     },
   });
 
+  const username = form.watch("username");
+  const debouncedUsername = useDebounce(username, 500);
+
+  const { data: usernameAvailability, isLoading: isValidatingUsername } =
+    useQuery({
+      queryKey: ["checkUsername", debouncedUsername],
+      queryFn: async () => {
+        if (debouncedUsername === initialData.username) {
+          return { available: true, isInitial: true };
+        }
+        const [data] = await fetcher<{ available: boolean; error?: string }>(
+          `/api/checkUserNameAvailability?username=${debouncedUsername}`
+        );
+        return { ...data, isInitial: false };
+      },
+      enabled: !!debouncedUsername && debouncedUsername.length >= 3,
+    });
+
   const { mutate: updateProfile, isPending } = useMutation({
     mutationFn: async (values: ProfileUpdateData) =>
       fetcher<ProfileData>(`/api/profile/${session?.user.username}/edit`, {
@@ -110,6 +129,11 @@ function Content({ initialData, className }: EditProfileDialogProps) {
   });
 
   const onSubmit = (values: FormValues) => {
+    if (!usernameAvailability?.available) {
+      toast.error("Username is not available");
+      return;
+    }
+
     updateProfile({
       username: values.username,
       bio: values.bio || null,
@@ -148,6 +172,26 @@ function Content({ initialData, className }: EditProfileDialogProps) {
                   <FormControl>
                     <Input placeholder="Enter your username" {...field} />
                   </FormControl>
+                  <FormDescription className="text-xs sm:text-sm">
+                    {isValidatingUsername ? (
+                      <span className="text-yellow-500">
+                        Checking availability...
+                      </span>
+                    ) : usernameAvailability?.available &&
+                      !usernameAvailability.isInitial ? (
+                      <span className="text-green-500">
+                        Username is available
+                      </span>
+                    ) : usernameAvailability?.error ? (
+                      <span className="text-red-500">
+                        Error: {usernameAvailability.error}
+                      </span>
+                    ) : !usernameAvailability?.available ? (
+                      <span className="text-red-500">
+                        Username is not available
+                      </span>
+                    ) : null}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -202,7 +246,11 @@ function Content({ initialData, className }: EditProfileDialogProps) {
           <div className="flex items-center justify-end gap-2 border-t border-border px-4 py-3">
             <motion.button
               type="submit"
-              disabled={isPending}
+              disabled={
+                isPending ||
+                isValidatingUsername ||
+                !usernameAvailability?.available
+              }
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               transition={TRANSITION}
