@@ -11,7 +11,7 @@ const ratelimit = new Ratelimit({
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { handle: string } }
+  { params }: { params: Promise<{ handle: string }> }
 ) {
   const ip = ipAddress(req) ?? "127.0.0.1";
   const { success } = await ratelimit.limit(ip);
@@ -20,7 +20,7 @@ export async function GET(
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
-  const handle = params.handle;
+  const handle = (await params).handle;
   if (!handle) {
     return NextResponse.json({ error: "Handle is required" }, { status: 400 });
   }

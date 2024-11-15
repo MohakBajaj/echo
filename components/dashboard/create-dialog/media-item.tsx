@@ -55,7 +55,7 @@ const MediaWrapper = memo(
 
 MediaWrapper.displayName = "MediaWrapper";
 
-const Image = memo(({ src }: { src: string }) => (
+const Img = memo(({ src }: { src: string }) => (
   /* eslint-disable-next-line @next/next/no-img-element */
   <img
     src={src}
@@ -65,7 +65,7 @@ const Image = memo(({ src }: { src: string }) => (
   />
 ));
 
-Image.displayName = "Image";
+Img.displayName = "Img";
 
 const Video = memo(({ src }: { src: string }) => (
   <video
@@ -96,7 +96,7 @@ export const MediaItem = memo(
     return (
       <>
         <MediaWrapper onRemove={onRemove} onClick={() => setShowDialog(true)}>
-          {type === "image" ? <Image src={src} /> : <Video src={src} />}
+          {type === "image" ? <Img src={src} /> : <Video src={src} />}
         </MediaWrapper>
 
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
