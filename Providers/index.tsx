@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 import { useId } from "react";
 import HolyLoader from "holy-loader";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export default function Providers({
   children,
@@ -24,15 +25,14 @@ export default function Providers({
       enableSystem
       enableColorScheme
     >
-      {/* HolyLoader
-        color: #CECDC3 - (foreground in css)
-      */}
       <HolyLoader height={2} color="#CECDC3" />
-      <SessionProvider session={session}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </SessionProvider>
+      <NuqsAdapter>
+        <SessionProvider session={session}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </SessionProvider>
+      </NuqsAdapter>
     </ThemeProvider>
   );
 }

@@ -72,7 +72,10 @@ export default function Sidebar() {
                 button.href === pathname && "text-foreground",
                 button.variant === "default" && "bg-background hover:bg-muted",
                 button.variant === "muted" &&
-                  "bg-muted hover:text-slate-500 dark:hover:text-white"
+                  "bg-muted hover:text-slate-500 dark:hover:text-white",
+                button.href === "/profile" &&
+                  pathname === `/profile/@${session?.user?.username}` &&
+                  "text-foreground"
               )}
               onClick={() =>
                 button.href

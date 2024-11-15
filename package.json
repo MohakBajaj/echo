@@ -44,6 +44,7 @@
     "next-auth": "^4.24.10",
     "next-themes": "^0.3.0",
     "nsfw-filter": "^1.0.4",
+    "nuqs": "^2.2.1",
     "plaiceholder": "^3.0.0",
     "react": "19.0.0-rc-69d4b800-20241021",
     "react-dom": "19.0.0-rc-69d4b800-20241021",
