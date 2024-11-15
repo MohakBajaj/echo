@@ -13,7 +13,7 @@ const ratelimit = new Ratelimit({
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { handle: string } }
+  { params }: { params: Promise<{ handle: string }> }
 ) {
   const session = await getServerSession(config);
 
@@ -29,7 +29,7 @@ export async function PUT(
   }
 
   try {
-    const handle = params.handle;
+    const { handle } = await params;
     if (!handle) {
       return NextResponse.json(
         { error: "Handle is required" },
