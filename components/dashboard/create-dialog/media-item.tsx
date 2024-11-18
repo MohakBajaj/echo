@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, AlertCircle, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { memo, useState } from "react";
 import {
@@ -8,6 +8,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 const MediaWrapper = memo(
   ({
@@ -81,22 +82,53 @@ const Video = memo(({ src }: { src: string }) => (
 
 Video.displayName = "Video";
 
+type MediaItemProps = {
+  type: "image" | "video";
+  src: string;
+  onRemove: () => void;
+  uploading?: boolean;
+  error?: string;
+  deleting?: boolean;
+};
+
 export const MediaItem = memo(
-  ({
-    type,
-    src,
-    onRemove,
-  }: {
-    type: "image" | "video";
-    src: string;
-    onRemove: () => void;
-  }) => {
+  ({ type, src, onRemove, uploading, error, deleting }: MediaItemProps) => {
     const [showDialog, setShowDialog] = useState(false);
 
     return (
       <>
-        <MediaWrapper onRemove={onRemove} onClick={() => setShowDialog(true)}>
+        <MediaWrapper
+          onRemove={onRemove}
+          onClick={() =>
+            !uploading && !error && !deleting && setShowDialog(true)
+          }
+        >
           {type === "image" ? <Img src={src} /> : <Video src={src} />}
+
+          {(uploading || error || deleting) && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-md bg-background/80">
+              {(uploading || deleting) && (
+                <div className="flex flex-col items-center gap-1">
+                  <Loader2 className="size-6 animate-spin" />
+                  <span className="text-xs text-muted-foreground">
+                    {uploading ? "Uploading..." : "Removing..."}
+                  </span>
+                </div>
+              )}
+              {error && (
+                <div
+                  className={cn(
+                    "flex flex-col items-center gap-1 p-2 text-center text-destructive",
+                    error === "NSFW content detected" &&
+                      "flex size-full items-center justify-center backdrop-blur-sm"
+                  )}
+                >
+                  <AlertCircle className="size-6" />
+                  <span className="text-xs">{error}</span>
+                </div>
+              )}
+            </div>
+          )}
         </MediaWrapper>
 
         <Dialog open={showDialog} onOpenChange={setShowDialog}>

@@ -9,11 +9,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfileSkeleton } from "@/components/dashboard/profile/profile-skeleton";
 import { useEditProfileDialog } from "@/store";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EditProfileDialog from "@/components/dashboard/profile/edit-profile";
 import { ProfileData } from "@/types/profile";
 import { useParams } from "next/navigation";
-import { Lock } from "lucide-react";
+import { AlertTriangle, Lock } from "lucide-react";
+import PostsList from "@/components/dashboard/profile/post-list";
 
 export default function ProfilePage() {
   const { handle } = useParams();
@@ -24,19 +25,31 @@ export default function ProfilePage() {
     queryKey: ["profile", handle],
     queryFn: async () => {
       const username = decodeURIComponent(handle as string).replace("@", "");
-      const response = await fetcher<ProfileData>(`/api/profile/${username}`);
+      const [data, status] = await fetcher<ProfileData>(
+        `/api/profile/${username}`
+      );
 
-      if (!response?.[0]) {
+      if (status === 404) {
         throw new Error("Profile not found");
       }
 
-      return response[0];
+      if (status !== 200) {
+        throw new Error("Failed to fetch profile");
+      }
+
+      return data;
     },
     enabled: Boolean(handle),
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: (failureCount, error) => {
-      return error.message !== "Profile not found" && failureCount < 2;
+      // Don't retry for 404s or after 2 failures
+      if (error instanceof Error) {
+        return error.message !== "Profile not found" && failureCount < 2;
+      }
+      return failureCount < 2;
     },
+    refetchOnWindowFocus: false, // Prevent unnecessary refetches
+    refetchOnMount: false, // Only fetch once when component mounts
   });
 
   if (status === "loading" || isLoading) {
@@ -44,7 +57,18 @@ export default function ProfilePage() {
   }
 
   if (!profileData) {
-    return <div>Profile not found</div>;
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 p-6 text-center">
+        <AlertTriangle className="size-12 text-muted-foreground" />
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold">Profile not found</h2>
+          <p className="text-sm text-muted-foreground">
+            The profile you&apos;re looking for doesn&apos;t exist or has been
+            removed
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const { username, bio, createdAt, college, privacy, _count } = profileData;
@@ -110,6 +134,19 @@ export default function ProfilePage() {
               </TabsTrigger>
             ))}
           </TabsList>
+          <TabsContent value="posts">
+            <PostsList handle={handle as string} />
+          </TabsContent>
+          {["replies", "reposts"].map((tab) => (
+            <TabsContent key={tab} value={tab}>
+              <div className="flex w-full flex-col items-center justify-center gap-3 py-8">
+                <AlertTriangle className="size-12 text-muted-foreground" />
+                <p className="text-center text-sm font-medium text-muted-foreground">
+                  Sorry, {tab} are not available. Implementing soon.
+                </p>
+              </div>
+            </TabsContent>
+          ))}
         </Tabs>
       ) : (
         <div className="flex w-full flex-col items-center justify-center gap-3 py-8">

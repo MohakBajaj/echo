@@ -7,6 +7,7 @@ import { cn, getAvatarURL } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { Icons } from "@/assets/Icons";
 import { ChevronLeft } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function PageLayout({
   children,
@@ -20,6 +21,8 @@ export default function PageLayout({
   const { data: session } = useSession();
   const avatarURL = getAvatarURL(session?.user?.username ?? "");
   router.prefetch(avatarURL);
+
+  const queryClient = useQueryClient();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -47,7 +50,15 @@ export default function PageLayout({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="font-[family-name:var(--font-poppins)] font-semibold capitalize"
-          onClick={() => router.refresh()}
+          onClick={() => {
+            queryClient.invalidateQueries({
+              queryKey: ["posts"],
+              exact: false,
+            });
+            queryClient.refetchQueries({ queryKey: ["posts"], exact: false });
+            queryClient.fetchQuery({ queryKey: ["posts"] });
+            router.push(pathname);
+          }}
           aria-label="Refresh page"
         >
           <span className="hidden sm:block">
@@ -64,7 +75,7 @@ export default function PageLayout({
       </header>
 
       <main className="flex-1">
-        <div className="mx-auto h-[calc(100dvh-3rem)] w-full max-w-2xl overflow-y-auto rounded-t-lg border-x border-t border-border">
+        <div className="no-scrollbar mx-auto h-[calc(100dvh-3rem)] w-full max-w-2xl overflow-y-auto rounded-t-lg border-x border-t border-border">
           {children}
         </div>
       </main>
