@@ -149,7 +149,7 @@ export function Content({ className }: { className?: string }) {
   const { setOpenCreateDialog } = useCreateDialog();
   const { postPrivacy, setPostPrivacy } = usePost();
   const { data: session } = useSession();
-  const avatarURL = getAvatarURL(session?.user?.name ?? "");
+  const avatarURL = getAvatarURL(session?.user?.username ?? "");
 
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState("");
@@ -187,6 +187,8 @@ export function Content({ className }: { className?: string }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["profile-posts"] });
       toast.success("Echo posted successfully!");
       setOpenCreateDialog(false);
       setContent("");

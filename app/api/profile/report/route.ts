@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { userId, postId, reason } = body;
+    const { postId, reason } = body;
 
     if (!reason) {
       return NextResponse.json(
@@ -39,18 +39,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!userId && !postId) {
+    if (!postId) {
       return NextResponse.json(
-        { error: "Either userId or postId is required" },
+        { error: "Post ID is required" },
         { status: 400 }
       );
+    }
+
+    const post = await db.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
     const report = await db.report.create({
       data: {
         reason,
-        ...(userId && { userId }),
-        ...(postId && { postId }),
+        postId,
+        userId: post.authorId,
+        reportedById: session.user.id,
       },
     });
 

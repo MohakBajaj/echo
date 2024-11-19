@@ -86,3 +86,58 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await getServerSession(config);
+    if (!session) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    const { success, reset } = await ratelimit.limit(session.user.id);
+
+    if (!success) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded",
+          resetAt: new Date(reset).toISOString(),
+        },
+        { status: 429 }
+      );
+    }
+
+    const body = await req.json();
+    const { postId } = body;
+
+    const post = await db.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true },
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
+
+    if (post.authorId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Not authorized to delete this post" },
+        { status: 403 }
+      );
+    }
+
+    await db.post.delete({
+      where: { id: postId },
+    });
+
+    return NextResponse.json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    return NextResponse.json(
+      { error: "Failed to delete post" },
+      { status: 500 }
+    );
+  }
+}

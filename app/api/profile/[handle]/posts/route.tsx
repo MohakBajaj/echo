@@ -61,6 +61,14 @@ export async function GET(
             },
           },
         },
+        _count: {
+          select: {
+            likes: true,
+            dislikes: true,
+            replies: true,
+            reposts: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",

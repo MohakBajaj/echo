@@ -1,0 +1,77 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { z } from "zod";
+import { db } from "@/lib/db";
+import { config } from "@/lib/auth";
+
+const likeSchema = z.object({
+  postId: z.string(),
+});
+
+type LikeInput = z.infer<typeof likeSchema>;
+
+export async function POST(req: Request) {
+  try {
+    const session = await getServerSession(config);
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const validatedData = likeSchema.parse(body) as LikeInput;
+
+    // Remove dislike if exists
+    await db.dislike.deleteMany({
+      where: {
+        postId: validatedData.postId,
+        userId: session.user.id,
+      },
+    });
+
+    // Check if like already exists
+    const existingLike = await db.like.findUnique({
+      where: {
+        postId_userId: {
+          postId: validatedData.postId,
+          userId: session.user.id,
+        },
+      },
+    });
+
+    if (existingLike) {
+      // Unlike - delete the like
+      await db.like.delete({
+        where: {
+          postId_userId: {
+            postId: validatedData.postId,
+            userId: session.user.id,
+          },
+        },
+      });
+      return NextResponse.json({ liked: false });
+    }
+
+    // Create new like
+    await db.like.create({
+      data: {
+        postId: validatedData.postId,
+        userId: session.user.id,
+      },
+    });
+
+    return NextResponse.json({ liked: true });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: "Invalid request data" },
+        { status: 400 }
+      );
+    }
+
+    console.error("Like toggle error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
