@@ -123,6 +123,8 @@ export default function Post({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile-posts"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["search"] });
       setShowDeleteDialog(false);
       toast.success("Post deleted successfully");
     },

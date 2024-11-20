@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetcher, getAvatarURL, nFormatter } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
@@ -15,11 +15,13 @@ import { ProfileData } from "@/types/profile";
 import { useParams } from "next/navigation";
 import { AlertTriangle, Lock } from "lucide-react";
 import PostsList from "@/components/dashboard/profile/post-list";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { handle } = useParams();
   const { data: session, status } = useSession();
   const { setOpenEditProfileDialog } = useEditProfileDialog();
+  const queryClient = useQueryClient();
 
   const { data: profileData, isLoading } = useQuery({
     queryKey: ["profile", handle],
@@ -52,6 +54,49 @@ export default function ProfilePage() {
     refetchOnMount: false, // Only fetch once when component mounts
   });
 
+  const isOwnProfile = session?.user?.username === profileData?.username;
+
+  const { data: isFollowingData, isLoading: isFollowingLoading } = useQuery({
+    queryKey: ["isFollowing", handle],
+    queryFn: async () => {
+      const username = decodeURIComponent(handle as string).replace("@", "");
+      const [data] = await fetcher<{ isFollowing: boolean }>(
+        `/api/follow/is?username=${username}`
+      );
+      return data;
+    },
+    enabled:
+      Boolean(handle) &&
+      Boolean(session?.user) &&
+      !isOwnProfile &&
+      Boolean(profileData),
+  });
+
+  const followMutation = useMutation({
+    mutationFn: async () => {
+      const username = decodeURIComponent(handle as string).replace("@", "");
+      const [data, status] = await fetcher("/api/follow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
+      });
+
+      if (status !== 200) {
+        throw new Error("Failed to follow user");
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile", handle] });
+      queryClient.invalidateQueries({ queryKey: ["isFollowing", handle] });
+      toast.success("Successfully followed user");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to follow user. Try again later.");
+    },
+  });
+
   if (status === "loading" || isLoading) {
     return <ProfileSkeleton />;
   }
@@ -72,7 +117,6 @@ export default function ProfilePage() {
   }
 
   const { username, bio, createdAt, college, privacy, _count } = profileData;
-  const isOwnProfile = session?.user?.username === username;
 
   const stats = [
     { label: "followers", count: _count.followers },
@@ -112,20 +156,41 @@ export default function ProfilePage() {
           </p>
         ))}
       </div>
-      {/* Edit Profile Button - Only show for own profile */}
-      {isOwnProfile && (
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ type: "spring", bounce: 0.05, duration: 0.2 }}
-          className="rounded-lg border border-border bg-background px-4 py-1 text-foreground"
-          onClick={() => setOpenEditProfileDialog(true)}
-        >
-          Edit Profile
-        </motion.button>
-      )}
+      {/* Profile Actions */}
+      <div className="flex gap-2">
+        {isOwnProfile ? (
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", bounce: 0.05, duration: 0.2 }}
+            className="rounded-lg border border-border bg-background px-4 py-1 text-foreground"
+            onClick={() => setOpenEditProfileDialog(true)}
+          >
+            Edit Profile
+          </motion.button>
+        ) : (
+          session?.user && (
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", bounce: 0.05, duration: 0.2 }}
+              className="rounded-lg border border-border bg-background px-4 py-1 text-foreground"
+              onClick={() => followMutation.mutate()}
+              disabled={followMutation.isPending || isFollowingLoading}
+            >
+              {followMutation.isPending || isFollowingLoading
+                ? "Loading..."
+                : isFollowingData?.isFollowing
+                  ? "Unfollow"
+                  : "Follow"}
+            </motion.button>
+          )
+        )}
+      </div>
       <Separator />
-      {profileData.privacy === "PUBLIC" || isOwnProfile ? (
+      {profileData.privacy === "PUBLIC" ||
+      isOwnProfile ||
+      isFollowingData?.isFollowing ? (
         <Tabs defaultValue="posts">
           <TabsList className="mb-4 w-full justify-evenly">
             {["posts", "replies", "reposts"].map((tab) => (
