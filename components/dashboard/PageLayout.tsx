@@ -78,7 +78,7 @@ export default function PageLayout({
           className="absolute right-4 top-2.5 z-50 sm:hidden"
           aria-label="More options"
         >
-          <MoreButton />
+          <MoreButton key={"more-mobile"} />
         </div>
       </header>
 

@@ -4,9 +4,11 @@ import useClickOutside from "@/hooks/use-click-outside";
 import { MotionConfig, motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, Monitor, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import { Icons } from "@/assets/Icons";
+import { cn } from "@/lib/utils";
+import useWindow from "@/hooks/use-window";
 
 const TRANSITION = {
   type: "spring",
@@ -29,6 +31,8 @@ const THEMES = [
 
 export default function MoreButton() {
   const appearanceRef = useRef<HTMLDivElement>(null);
+  const id = useId();
+  const { isMobile } = useWindow();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -41,7 +45,7 @@ export default function MoreButton() {
       <div className="relative flex items-center justify-center sm:mt-4">
         <motion.button
           key="button"
-          layoutId="more-button"
+          layoutId={"more-button" + id}
           className="flex h-10 w-12 items-center justify-center bg-background px-3 text-foreground transition-colors hover:bg-muted"
           style={{
             borderRadius: 8,
@@ -50,7 +54,7 @@ export default function MoreButton() {
           whileTap={{ scale: 0.95 }}
         >
           <motion.span
-            layoutId="more-label"
+            layoutId={"more-label" + id}
             className="text-sm"
             animate={{ rotate: isOpen ? 180 : 0 }}
           >
@@ -62,8 +66,11 @@ export default function MoreButton() {
           {isOpen && (
             <motion.div
               ref={appearanceRef}
-              layoutId="more-button"
-              className="absolute right-0 top-0 z-[999] h-auto min-h-[180px] w-[50vw] max-w-[350px] overflow-hidden border border-border bg-background shadow-lg outline-none sm:bottom-0 sm:left-0 sm:w-[350px]"
+              layoutId={"more-button" + id}
+              className={cn(
+                "absolute z-[999] h-auto min-h-[180px] w-[50vw] max-w-[350px] overflow-hidden border border-border bg-background shadow-lg outline-none sm:w-[350px]",
+                isMobile ? "right-0 top-0" : "bottom-0 left-0"
+              )}
               style={{
                 borderRadius: 12,
               }}
@@ -71,7 +78,7 @@ export default function MoreButton() {
             >
               <div className="flex h-full flex-col">
                 <motion.span
-                  layoutId="more-label"
+                  layoutId={"more-label" + id}
                   className="absolute left-4 top-3 select-none text-sm text-muted-foreground"
                 >
                   Appearance

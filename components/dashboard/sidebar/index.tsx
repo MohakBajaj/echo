@@ -90,7 +90,7 @@ export default function Sidebar() {
           ))}
         </div>
         {/* More Button */}
-        <MoreButton />
+        <MoreButton key={"more-desktop"} />
       </div>
 
       {/* Mobile Navigation */}
