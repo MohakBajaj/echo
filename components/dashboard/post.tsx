@@ -370,10 +370,12 @@ export default function Post({
       )}
 
       <Dialog open={showReportDialog} onOpenChange={setShowReportDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-[90vw] rounded-lg sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Report Post</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">
+              Report Post
+            </DialogTitle>
+            <DialogDescription className="text-sm sm:text-base">
               Please provide a reason for reporting this post.
             </DialogDescription>
           </DialogHeader>
@@ -390,27 +392,35 @@ export default function Post({
                 name="reason"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Reason</FormLabel>
+                    <FormLabel className="text-sm sm:text-base">
+                      Reason
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Enter your reason for reporting..."
+                        className="min-h-[100px] text-sm sm:text-base"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs sm:text-sm" />
                   </FormItem>
                 )}
               />
 
-              <DialogFooter>
+              <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <Button
                   variant="outline"
                   onClick={() => setShowReportDialog(false)}
                   type="button"
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={reportMutation.isPending}>
+                <Button
+                  type="submit"
+                  disabled={reportMutation.isPending}
+                  className="w-full sm:w-auto"
+                >
                   {reportMutation.isPending ? "Submitting..." : "Submit Report"}
                 </Button>
               </DialogFooter>

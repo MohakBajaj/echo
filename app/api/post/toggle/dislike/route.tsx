@@ -48,7 +48,26 @@ export async function POST(req: Request) {
           },
         },
       });
+
+      // Delete notification for post author
+      await db.notification.deleteMany({
+        where: {
+          postId: validatedData.postId,
+          senderUserId: session.user.id,
+        },
+      });
+
       return NextResponse.json({ disliked: false });
+    }
+
+    // Get post details for notification
+    const post = await db.post.findUnique({
+      where: { id: validatedData.postId },
+      select: { authorId: true },
+    });
+
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
     // Create new dislike
@@ -58,6 +77,19 @@ export async function POST(req: Request) {
         userId: session.user.id,
       },
     });
+
+    // Create notification for post author
+    if (post.authorId !== session.user.id) {
+      await db.notification.create({
+        data: {
+          type: "LIKE",
+          message: "disliked your post",
+          senderUserId: session.user.id,
+          receiverUserId: post.authorId,
+          postId: validatedData.postId,
+        },
+      });
+    }
 
     return NextResponse.json({ disliked: true });
   } catch (error) {

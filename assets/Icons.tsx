@@ -19,4 +19,17 @@ export const Icons = {
       />
     </svg>
   ),
+  more: (props: React.SVGProps<SVGSVGElement>) => (
+    <svg
+      aria-label="More"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      color="currentColor"
+      {...props}
+    >
+      <title>More</title>
+      <rect rx="1.25" x="3" y="7" width="18" height="2" />
+      <rect rx="1.25" x="3" y="15" width="14" height="2" />
+    </svg>
+  ),
 };

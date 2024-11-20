@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Icons } from "@/assets/Icons";
 import { motion } from "framer-motion";
-import AppearanceButton from "./appearance-button";
+import MoreButton from "./more-button";
 import { Heart, Home, Plus, Search, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
@@ -89,8 +89,8 @@ export default function Sidebar() {
             </motion.button>
           ))}
         </div>
-        {/* Appearance */}
-        <AppearanceButton />
+        {/* More Button */}
+        <MoreButton />
       </div>
 
       {/* Mobile Navigation */}

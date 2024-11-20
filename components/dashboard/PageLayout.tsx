@@ -8,6 +8,7 @@ import { siteConfig } from "@/config/site";
 import { Icons } from "@/assets/Icons";
 import { ChevronLeft } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import MoreButton from "./sidebar/more-button";
 
 export default function PageLayout({
   children,
@@ -29,9 +30,8 @@ export default function PageLayout({
       <header
         className={cn(
           "sticky top-0 flex h-14 w-full items-center bg-background px-4",
-          pathname === "/"
-            ? "justify-center"
-            : "justify-between sm:justify-center"
+          "relative",
+          "justify-center"
         )}
       >
         {pathname !== "/" && (
@@ -39,7 +39,7 @@ export default function PageLayout({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.back()}
-            className="sm:hidden"
+            className="absolute left-4 top-5 sm:hidden"
             aria-label="Go back"
           >
             <ChevronLeft className="size-5" />
@@ -74,8 +74,12 @@ export default function PageLayout({
           </span>
         </motion.button>
 
-        {/* Placeholder div to maintain center alignment on desktop */}
-        {pathname !== "/" && <div className="w-10 sm:hidden" />}
+        <div
+          className="absolute right-4 top-2.5 z-50 sm:hidden"
+          aria-label="More options"
+        >
+          <MoreButton />
+        </div>
       </header>
 
       <main className="flex-1">

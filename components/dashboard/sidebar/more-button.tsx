@@ -2,9 +2,11 @@
 
 import useClickOutside from "@/hooks/use-click-outside";
 import { MotionConfig, motion, AnimatePresence } from "framer-motion";
-import { SunMoon, Sun, Moon, Monitor } from "lucide-react";
+import { Sun, Moon, Monitor, LogOut } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
+import { signOut } from "next-auth/react";
+import { Icons } from "@/assets/Icons";
 
 const TRANSITION = {
   type: "spring",
@@ -25,7 +27,7 @@ const THEMES = [
   { label: "Auto", value: "system", icon: Monitor },
 ];
 
-export default function AppearanceButton() {
+export default function MoreButton() {
   const appearanceRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -36,10 +38,10 @@ export default function AppearanceButton() {
 
   return (
     <MotionConfig transition={TRANSITION}>
-      <div className="relative mt-4 flex items-center justify-center">
+      <div className="relative flex items-center justify-center sm:mt-4">
         <motion.button
           key="button"
-          layoutId="appearance-button"
+          layoutId="more-button"
           className="flex h-10 w-12 items-center justify-center bg-background px-3 text-foreground transition-colors hover:bg-muted"
           style={{
             borderRadius: 8,
@@ -48,11 +50,11 @@ export default function AppearanceButton() {
           whileTap={{ scale: 0.95 }}
         >
           <motion.span
-            layoutId="appearance-label"
+            layoutId="more-label"
             className="text-sm"
             animate={{ rotate: isOpen ? 180 : 0 }}
           >
-            <SunMoon size={20} />
+            <Icons.more className="size-5" />
           </motion.span>
         </motion.button>
 
@@ -60,8 +62,8 @@ export default function AppearanceButton() {
           {isOpen && (
             <motion.div
               ref={appearanceRef}
-              layoutId="appearance-button"
-              className="absolute bottom-0 left-0 h-[120px] w-[350px] overflow-hidden border border-border bg-background shadow-lg outline-none"
+              layoutId="more-button"
+              className="absolute right-0 top-0 z-[999] h-auto min-h-[180px] w-[50vw] max-w-[350px] overflow-hidden border border-border bg-background shadow-lg outline-none sm:bottom-0 sm:left-0 sm:w-[350px]"
               style={{
                 borderRadius: 12,
               }}
@@ -69,7 +71,7 @@ export default function AppearanceButton() {
             >
               <div className="flex h-full flex-col">
                 <motion.span
-                  layoutId="appearance-label"
+                  layoutId="more-label"
                   className="absolute left-4 top-3 select-none text-sm text-muted-foreground"
                 >
                   Appearance
@@ -80,7 +82,7 @@ export default function AppearanceButton() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <div className="mt-6 flex flex-row gap-2">
+                  <div className="mt-6 flex flex-col gap-2 sm:flex-row">
                     {THEMES.map((t) => (
                       <motion.button
                         key={t.value}
@@ -105,13 +107,22 @@ export default function AppearanceButton() {
                             />
                           )}
                         </AnimatePresence>
-                        <div className="z-10 flex flex-col items-center gap-2">
+                        <div className="z-10 flex flex-row items-center gap-2 sm:flex-col">
                           <t.icon size={20} />
                           <span className="text-sm">{t.label}</span>
                         </div>
                       </motion.button>
                     ))}
                   </div>
+                  <motion.button
+                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground"
+                    onClick={() => signOut()}
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <LogOut size={16} />
+                    <span>Log out</span>
+                  </motion.button>
                 </motion.div>
               </div>
             </motion.div>
