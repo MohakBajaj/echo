@@ -142,6 +142,8 @@ export default function Post({
       return data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["search"] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["profile-posts"] });
     },
   });
@@ -160,6 +162,8 @@ export default function Post({
       return data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["search"] });
       queryClient.invalidateQueries({ queryKey: ["profile-posts"] });
     },
   });

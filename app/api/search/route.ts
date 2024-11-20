@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { User, Post } from "@prisma/client";
+import { User, Post, College } from "@prisma/client";
 
 export async function GET(request: Request) {
   try {
@@ -17,6 +17,7 @@ export async function GET(request: Request) {
 
     let users: Partial<User>[] = [];
     let posts: Partial<Post>[] = [];
+    let colleges: Partial<College>[] = [];
 
     if (type === "all" || type === "users") {
       users = await db.user.findMany({
@@ -46,10 +47,7 @@ export async function GET(request: Request) {
           text: { contains: query, mode: "insensitive" },
           privacy: "ANYONE",
         },
-        select: {
-          id: true,
-          text: true,
-          createdAt: true,
+        include: {
           author: {
             select: {
               username: true,
@@ -63,6 +61,7 @@ export async function GET(request: Request) {
           _count: {
             select: {
               likes: true,
+              dislikes: true,
               replies: true,
               reposts: true,
             },
@@ -75,7 +74,25 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json({ users, posts });
+    if (type === "all" || type === "colleges") {
+      colleges = await db.college.findMany({
+        where: {
+          name: { contains: query, mode: "insensitive" },
+        },
+        select: {
+          name: true,
+          id: true,
+          _count: {
+            select: {
+              User: true,
+            },
+          },
+        },
+        take: 10,
+      });
+    }
+
+    return NextResponse.json({ users, posts, colleges });
   } catch (error) {
     console.error("Search error:", error);
     return NextResponse.json(

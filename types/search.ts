@@ -6,20 +6,31 @@ export type SearchResponse = {
       name: string;
     };
   }[];
-  posts: {
+  posts: Post[];
+  colleges: {
     id: string;
-    text: string;
-    createdAt: Date;
-    author: {
-      username: string;
-      college: {
-        name: string;
-      };
-    };
+    name: string;
     _count: {
-      likes: number;
-      replies: number;
-      reposts: number;
+      User: number;
     };
   }[];
+};
+
+type Post = {
+  id: string;
+  text: string;
+  media: string[];
+  authorId: string;
+  author: {
+    username: string;
+    college: {
+      name: string;
+    };
+  };
+  _count: {
+    likes: number;
+    dislikes: number;
+    replies?: number;
+    reposts?: number;
+  };
 };

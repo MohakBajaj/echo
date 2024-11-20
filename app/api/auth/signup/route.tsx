@@ -71,6 +71,16 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Create notification
+    await db.notification.create({
+      data: {
+        type: "ADMIN",
+        senderUserId: "cm2rp7al80003yr3qq7o0nb1v",
+        receiverUserId: newUser.id,
+        message: `Hello @${username}! Welcome to the Echo!`,
+      },
+    });
+
     return NextResponse.json(
       { message: "User created successfully", userId: newUser.id },
       { status: 201 }

@@ -62,7 +62,11 @@ export default function PageLayout({
           aria-label="Refresh page"
         >
           <span className="hidden sm:block">
-            {pathname === "/" ? "Home" : pathname.slice(1).replace(/-/g, " ")}
+            {pathname === "/"
+              ? "Home"
+              : pathname.startsWith("/college")
+                ? "College"
+                : pathname.slice(1).replace(/-/g, " ")}
           </span>
           <span className="flex items-center gap-1.5 sm:hidden">
             <Icons.logo className="size-6" />
