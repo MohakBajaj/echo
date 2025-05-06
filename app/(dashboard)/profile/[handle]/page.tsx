@@ -15,6 +15,8 @@ import { ProfileData } from "@/types/profile";
 import { useParams } from "next/navigation";
 import { AlertTriangle, Lock } from "lucide-react";
 import PostsList from "@/components/dashboard/profile/post-list";
+import RepliesList from "@/components/dashboard/profile/replies-list";
+import RepostsList from "@/components/dashboard/profile/reposts-list";
 import { toast } from "sonner";
 
 export default function ProfilePage() {
@@ -202,16 +204,12 @@ export default function ProfilePage() {
           <TabsContent value="posts">
             <PostsList handle={handle as string} />
           </TabsContent>
-          {["replies", "reposts"].map((tab) => (
-            <TabsContent key={tab} value={tab}>
-              <div className="flex w-full flex-col items-center justify-center gap-3 py-8">
-                <AlertTriangle className="size-12 text-muted-foreground" />
-                <p className="text-center text-sm font-medium text-muted-foreground">
-                  Sorry, {tab} are not available. Implementing soon.
-                </p>
-              </div>
-            </TabsContent>
-          ))}
+          <TabsContent value="replies">
+            <RepliesList handle={handle as string} />
+          </TabsContent>
+          <TabsContent value="reposts">
+            <RepostsList handle={handle as string} />
+          </TabsContent>
         </Tabs>
       ) : (
         <div className="flex w-full flex-col items-center justify-center gap-3 py-8">
@@ -222,13 +220,7 @@ export default function ProfilePage() {
         </div>
       )}
       {isOwnProfile && (
-        <EditProfileDialog
-          initialData={{
-            username,
-            bio,
-            privacy,
-          }}
-        />
+        <EditProfileDialog initialData={{ username, bio, privacy }} />
       )}
     </div>
   );

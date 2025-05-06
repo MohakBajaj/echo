@@ -2,6 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fetcher } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import Post from "../post";
+import { AlertTriangle } from "lucide-react";
 
 type Post = {
   id: string;
@@ -19,22 +20,19 @@ type Post = {
   isLiked?: boolean;
   isDisliked?: boolean;
   isReposted?: boolean;
-  isRepost?: boolean;
-  repostedBy?: { id: string; username: string };
-  repostedAt?: string;
 };
 
-export default function PostsList({ handle }: { handle: string }) {
-  const { data: posts, isLoading } = useQuery({
-    queryKey: ["profile-posts", "posts", handle],
+export default function RepostsList({ handle }: { handle: string }) {
+  const { data: reposts, isLoading } = useQuery({
+    queryKey: ["profile-reposts", handle],
     queryFn: async () => {
       const username = decodeURIComponent(handle).replace("@", "");
       const [data, status] = await fetcher<Post[]>(
-        `/api/profile/${username}/posts`
+        `/api/profile/${username}/reposts`
       );
 
       if (status !== 200) {
-        throw new Error("Failed to fetch posts");
+        throw new Error("Failed to fetch reposts");
       }
 
       return data;
@@ -56,21 +54,18 @@ export default function PostsList({ handle }: { handle: string }) {
               <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
             </div>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              <Skeleton className="aspect-square rounded-md" />
-              <Skeleton className="aspect-square rounded-md" />
-            </div>
           </div>
         ))}
       </div>
     );
   }
 
-  if (!posts?.length) {
+  if (!reposts?.length) {
     return (
       <div className="flex flex-col items-center justify-center py-8">
-        <p className="text-center text-sm text-muted-foreground">
-          No posts yet
+        <AlertTriangle className="size-12 text-muted-foreground" />
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          No reposts yet
         </p>
       </div>
     );
@@ -78,8 +73,13 @@ export default function PostsList({ handle }: { handle: string }) {
 
   return (
     <div className="space-y-4 pb-16 sm:pb-0">
-      {posts.map((post) => (
-        <Post key={post.id} {...post} />
+      {reposts.map((post) => (
+        <Post
+          key={post.id}
+          {...post}
+          isRepost={true}
+          repostedBy={{ id: post.author.id, username: post.author.username }}
+        />
       ))}
     </div>
   );
