@@ -44,9 +44,7 @@ export const config = {
           select: {
             id: true,
             username: true,
-            college: {
-              select: { name: true },
-            },
+            college: { select: { name: true } },
             isAdmin: true,
           },
         });
@@ -94,8 +92,5 @@ export const config = {
       return token;
     },
   },
-  pages: {
-    signIn: "/auth/login",
-    signOut: "/auth/logout",
-  },
+  pages: { signIn: "/auth/login", signOut: "/auth/logout" },
 } satisfies NextAuthOptions;
