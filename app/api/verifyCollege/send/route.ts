@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const code = generateCode(email);
 
     const { data, error } = await resend.emails.send({
-      from: "Mohak from Echo <echo@bmohak.codes>",
+      from: "Mohak from Echo <echo@bmohak.xyz>",
       to: email,
       subject: "Verify your email address",
       react: AccountVerificationEmailTemplate({ Code: code }),
